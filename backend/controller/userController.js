@@ -64,7 +64,7 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "User not found",
       });
     }
 
@@ -72,7 +72,7 @@ const login = async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "User not authorized",
       });
     }
 
