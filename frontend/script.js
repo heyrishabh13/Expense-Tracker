@@ -10,7 +10,7 @@ async function handleSignupSubmit(e) {
       email: e.target.email.value,
       password: e.target.password.value,
     });
-    alert(res.data);
+    alert(res.data.message);
     console.log(res.data);
   } catch (error) {
     console.log(error);

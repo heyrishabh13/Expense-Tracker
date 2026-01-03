@@ -1,22 +1,32 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
+
+function isStringValid(str) {
+  if (str == undefined || str == null || str.length === 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const users = await User.findAll();
-    users.forEach((user) => {
-      if (user.email === email) {
-        res.status(201).send("User already created!");
-        return;
-      }
-    });
-    const user = await User.create(req.body);
-    if (!user) {
-      res.status(404).send("User not found");
+    if (
+      isStringValid(name) ||
+      isStringValid(email) ||
+      isStringValid(password)
+    ) {
+      return res.status(400).json({ err: "Bad Parameters" });
     }
-    res.status(201).send(`User created successfully`);
+
+    bcrypt.hash(password, 10, async (err, hash) => {
+      console.log(err);
+      await User.create({ name, email, password: hash });
+      res.status(201).json({ message: "Successfully created new user" });
+    });
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).json(err);
   }
 };
 
@@ -68,25 +78,26 @@ const login = async (req, res) => {
       });
     }
 
-    // Plain text comparison (temporary!)
-    if (user.password !== password) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authorized",
-      });
-    }
-
     // Success
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        // NEVER return password!
-      },
-      // In real app you would add: token: jwt.sign(...)
+    bcrypt.compare(password, user.password, (err, response) => {
+      if (!err) {
+        return res.status(200).json({
+          success: true,
+          message: "Login successful",
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            // NEVER return password!
+          },
+
+          // In real app you would add: token: jwt.sign(...)
+        });
+      } else {
+        return res
+          .status(400)
+          .json({ success: false, message: "Password is incorrect" });
+      }
     });
   } catch (error) {
     console.error("Login error:", error);
