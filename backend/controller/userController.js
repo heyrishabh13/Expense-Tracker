@@ -81,7 +81,7 @@ const login = async (req, res) => {
     // Success
     bcrypt.compare(password, user.password, (err, response) => {
       if (!err) {
-        return res.status(200).json({
+        res.status(200).json({
           success: true,
           message: "Login successful",
           user: {
