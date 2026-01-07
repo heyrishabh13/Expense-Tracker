@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 function isStringValid(str) {
   if (str == undefined || str == null || str.length === 0) {
@@ -56,6 +57,13 @@ const signup = async (req, res) => {
 //   }
 // };
 
+const generateAccessToken = (id) => {
+  return jwt.sign(
+    { userId: id },
+    "ajfdfadfdfjifwjefjfjwifjwijafiawfjifwaewjifiefjw"
+  );
+};
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -90,6 +98,7 @@ const login = async (req, res) => {
             email: user.email,
             // NEVER return password!
           },
+          token: generateAccessToken(user.id),
 
           // In real app you would add: token: jwt.sign(...)
         });

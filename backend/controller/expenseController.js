@@ -1,4 +1,5 @@
 const Expense = require("../models/expense");
+const jwt = require("jsonwebtoken");
 
 function isValidString(str) {
   if (str != undefined || str != undefined || str.length !== 0) {
@@ -10,6 +11,7 @@ function isValidString(str) {
 
 const addExpense = async (req, res) => {
   try {
+    const token = req.headers.authorization;
     const { money, description, category } = req.body;
     if (
       !isValidString(money) ||
@@ -21,10 +23,18 @@ const addExpense = async (req, res) => {
         .json({ success: false, message: "Required elements are missing" });
     }
 
+    const user = jwt.verify(
+      token,
+      "ajfdfadfdfjifwjefjfjwifjwijafiawfjifwaewjifiefjw"
+    );
+
+    console.log("user>>>>", user);
+
     const expense = await Expense.create({
       money,
       description,
       category,
+      userId: user.userId,
     });
 
     if (!expense) {
@@ -39,10 +49,19 @@ const addExpense = async (req, res) => {
 };
 
 const deleteExpense = async (req, res) => {
+  const token = req.headers.authorization;
+  console.log("token >>>>>", token);
+  const user = jwt.verify(
+    token,
+    "ajfdfadfdfjifwjefjfjwifjwijafiawfjifwaewjifiefjw"
+  );
+  if (!user) {
+    res.status(404).json({ message: "Invalid token" });
+  }
   try {
     {
       const deletedCount = await Expense.destroy({
-        where: { id: req.params.id },
+        where: { id: req.params.id, userId: user.userId },
       });
 
       if (deletedCount === 0) {
@@ -60,11 +79,13 @@ const deleteExpense = async (req, res) => {
 };
 
 const getAllExpenses = async (req, res) => {
+  const user = req.user;
   try {
-    const expenses = await Expense.findAll();
+    const expenses = await Expense.findAll({ where: { userId: user.id } });
     if (!expenses) {
       res.status(404).json({ success: false, message: "Expenses not found" });
     }
+    console.log("expenses >>> ", expenses);
     res
       .status(200)
       .json({ success: true, count: expenses.length, data: expenses });

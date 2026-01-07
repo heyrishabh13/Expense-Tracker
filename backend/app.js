@@ -4,6 +4,9 @@ const userRoutes = require("./routes/userRoutes");
 const expenseRoutes = require("./routes/expenseRoutes");
 const cors = require("cors");
 
+//models
+require("./models");
+
 const app = express();
 
 app.use(express.json());
