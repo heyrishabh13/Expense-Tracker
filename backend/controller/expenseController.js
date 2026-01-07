@@ -11,7 +11,6 @@ function isValidString(str) {
 
 const addExpense = async (req, res) => {
   try {
-    const token = req.headers.authorization;
     const { money, description, category } = req.body;
     if (
       !isValidString(money) ||
@@ -23,18 +22,11 @@ const addExpense = async (req, res) => {
         .json({ success: false, message: "Required elements are missing" });
     }
 
-    const user = jwt.verify(
-      token,
-      "ajfdfadfdfjifwjefjfjwifjwijafiawfjifwaewjifiefjw"
-    );
-
-    console.log("user>>>>", user);
-
     const expense = await Expense.create({
       money,
       description,
       category,
-      userId: user.userId,
+      userId: req.user.id,
     });
 
     if (!expense) {
@@ -49,19 +41,11 @@ const addExpense = async (req, res) => {
 };
 
 const deleteExpense = async (req, res) => {
-  const token = req.headers.authorization;
-  console.log("token >>>>>", token);
-  const user = jwt.verify(
-    token,
-    "ajfdfadfdfjifwjefjfjwifjwijafiawfjifwaewjifiefjw"
-  );
-  if (!user) {
-    res.status(404).json({ message: "Invalid token" });
-  }
+  console.log("req.user >>> ", req.user);
   try {
     {
       const deletedCount = await Expense.destroy({
-        where: { id: req.params.id, userId: user.userId },
+        where: { id: req.params.id, userId: req.user.id },
       });
 
       if (deletedCount === 0) {
@@ -85,7 +69,6 @@ const getAllExpenses = async (req, res) => {
     if (!expenses) {
       res.status(404).json({ success: false, message: "Expenses not found" });
     }
-    console.log("expenses >>> ", expenses);
     res
       .status(200)
       .json({ success: true, count: expenses.length, data: expenses });
