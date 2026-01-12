@@ -106,3 +106,7 @@ async function deleteExpense(li, id) {
     console.log(error.message);
   }
 }
+
+function handleCashless() {
+  window.location.href = "./cashfree.html";
+}

@@ -3,6 +3,7 @@ const db = require("./utils/db-connection");
 const userRoutes = require("./routes/userRoutes");
 const expenseRoutes = require("./routes/expenseRoutes");
 const cors = require("cors");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 //models
 require("./models");
@@ -14,6 +15,7 @@ app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
+app.use("/", paymentRoutes);
 
 db.sync({ force: false })
   .then(() => {

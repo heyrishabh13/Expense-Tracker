@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cashfree Checkout Integration</title>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <p>Click below to open the checkout page in current tab</p>
+      <button id="renderBtn">Proceed to Pay</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+      const cashfree = Cashfree({
+        mode: "sandbox",
+      });
+      document
+        .getElementById("renderBtn")
+        .addEventListener("click", async () => {
+          try {
+            //fetch payment session ID from backend
+            const res = await axios.post("http://localhost:3000/pay");
+            const paymentSessionId = res.data.paymentSessionId;
+
+            let checkoutOptions = {
+              paymentSessionId,
+              redirectTarget: "_self", //default
+            };
+            await cashfree.checkout(checkoutOptions);
+            
+          } catch (error) {
+            console.log("Error:", error);
+          }
+        });
+    </script>
+  </body>
+</html>

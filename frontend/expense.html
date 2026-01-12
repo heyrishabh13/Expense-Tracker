@@ -4,23 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expense</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body>
+    <div class="flex justify-between">
+      <div>
+        <form onsubmit="handleExpenses(event)">
+          <label for="expense">Enter Expenses: </label>
+          <input
+            class="border-2 border-solid border-black rounded-md"
+            type="number"
+            id="expense"
+            required
+          />
+          <label for="description">Enter Description: </label>
+          <input
+            class="border-2 border-solid border-black rounded-md"
+            type="description"
+            id="description"
+            required
+          />
+          <label for="category">Category: </label>
+          <select
+            class="border-2 border-solid border-black rounded-md"
+            id="category"
+            name="category"
+          >
+            <option value="fuel">fuel</option>
+            <option value="movie">Movie</option>
+            <option value="food">food</option>
+            <option value="electricity">electricity</option>
+          </select>
+          <button
+            class="ml-4 bg-black text-white px-8 py-2 rounded-lg"
+            type="submit"
+          >
+            Add Expense
+          </button>
+        </form>
+      </div>
+      <button
+        onclick="handleCashless()"
+        class="bg-black text-white px-8 py-2 rounded-lg"
+      >
+        Buy Premium Membership
+      </button>
+    </div>
     <div>
-      <form onsubmit="handleExpenses(event)">
-        <label for="expense">Enter Expenses: </label>
-        <input type="number" id="expense" required />
-        <label for="description">Enter Description: </label>
-        <input type="description" id="description" required />
-        <label for="category">Category: </label>
-        <select id="category" name="category">
-          <option value="fuel">fuel</option>
-          <option value="movie">Movie</option>
-          <option value="food">food</option>
-          <option value="electricity">electricity</option>
-        </select>
-        <button type="submit">Add Expense</button>
-      </form>
       <ul id="expenses"></ul>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
